@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # File          : client_thread.py
 # Author        : bssthu
@@ -34,6 +34,7 @@ class ClientThread(threading.Thread):
                     except socket.timeout:
                         timeout_count += 1
                         if timeout_count >= 5:
+                            timeout_count = 0
                             client = self.reconnect(client)
                 try:
                     client.close()

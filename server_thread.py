@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # File          : server_thread.py
 # Author        : bssthu
@@ -30,7 +30,16 @@ class ServerThread(threading.Thread):
                     self.clients.append(conn)
                 except socket.timeout:
                     pass
+            self.close_all()
             print('server thread: bye')
         except Exception as e:
             print('server thread error: %s' % e)
             self.running = False
+
+    def close_all(self):
+        for client in self.clients:
+            try:
+                client.close()
+            except:
+                pass
+        self.clients.clear()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # File          : rtk.py
 # Author        : bssthu
@@ -40,7 +40,7 @@ class Rtk:
         self.client.start()
 
         print("enter 'q' to quit.")
-        while input() != 'q' and client.running:
+        while input() != 'q':
             print("enter 'q' to quit.")
 
         self.client.running = False
