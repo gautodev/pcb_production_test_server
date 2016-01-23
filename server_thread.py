@@ -19,6 +19,7 @@ class ServerThread(threading.Thread):
         self.running = True
 
     def run(self):
+        log.info('server thread: start')
         try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server.bind(('0.0.0.0', self.port))
@@ -28,6 +29,7 @@ class ServerThread(threading.Thread):
                 try:
                     conn, addr = server.accept()
                     self.clients.append(conn)
+                    log.info('new client from: %s' % addr)
                 except socket.timeout:
                     pass
             self.close_all()

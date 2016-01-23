@@ -8,14 +8,17 @@
 
 import json
 import log
-import time
 from server_thread import ServerThread
 from client_thread import ClientThread
 
 
 class Rtk:
+    def __init__(self):
+        self.recv_count = 0
+
     def got_data_cb(self, data):
-        log.debug('%s >> recv %d bytes' % (time.strftime('%Y-%m-%d %H:%M:%S'), len(data)))
+        log.debug('recv %d bytes' % len(data))
+        self.recv_count += 1
         clients = self.server.clients.copy()
         for c in clients:
             try:
@@ -41,7 +44,9 @@ class Rtk:
 
         print("enter 'q' to quit.")
         while input() != 'q':
-            print("enter 'q' to quit.")
+            print("enter 'q' to quit. recv count: %d" % self.recv_count)
+            if not self.client.running or not self.server.running:
+                break
 
         self.client.running = False
         self.client.join()

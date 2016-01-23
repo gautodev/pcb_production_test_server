@@ -22,6 +22,7 @@ class ClientThread(threading.Thread):
         self.running = True
 
     def run(self):
+        log.info('client thread: start')
         while self.running:
             try:
                 client = self.connect()
@@ -36,10 +37,11 @@ class ClientThread(threading.Thread):
                         if timeout_count >= 5:
                             timeout_count = 0
                             client = self.reconnect(client)
+                            log.debug('client timeout, reconnect')
                 try:
                     client.close()
                 except:
-                    pass
+                    log.debug('client exception, reconnect')
                 log.info('client thread: bye')
             except Exception as e:
                 log.error('client thread error: %s' % e)
