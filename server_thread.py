@@ -29,7 +29,7 @@ class ServerThread(threading.Thread):
                 try:
                     conn, addr = server.accept()
                     self.clients.append(conn)
-                    log.info('new client from: %s' % addr)
+                    log.info('new client from: %s' % str(addr))
                 except socket.timeout:
                     pass
             self.close_all()

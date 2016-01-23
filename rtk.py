@@ -42,7 +42,7 @@ class Rtk:
         self.server.start()
         self.client.start()
 
-        print("enter 'q' to quit.")
+        print("enter 'q' to quit. recv count: %d" % self.recv_count)
         while input() != 'q':
             print("enter 'q' to quit. recv count: %d" % self.recv_count)
             if not self.client.running or not self.server.running:
