@@ -8,7 +8,7 @@
 
 import socket
 import threading
-import time
+import log
 
 
 class ServerThread(threading.Thread):
@@ -31,9 +31,9 @@ class ServerThread(threading.Thread):
                 except socket.timeout:
                     pass
             self.close_all()
-            print('server thread: bye')
+            log.info('server thread: bye')
         except Exception as e:
-            print('server thread error: %s' % e)
+            log.error('server thread error: %s' % e)
             self.running = False
 
     def close_all(self):

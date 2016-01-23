@@ -6,9 +6,8 @@
 # Description   : socket 转发数据
 # 
 
-import socket
 import json
-import threading
+import log
 import time
 from server_thread import ServerThread
 from client_thread import ClientThread
@@ -16,14 +15,13 @@ from client_thread import ClientThread
 
 class Rtk:
     def got_data_cb(self, data):
-        print('%s >> recv %d bytes' % (time.strftime('%Y-%m-%d %H:%M:%S'), len(data)))
+        log.debug('%s >> recv %d bytes' % (time.strftime('%Y-%m-%d %H:%M:%S'), len(data)))
         clients = self.server.clients.copy()
         for c in clients:
             try:
                 c.sendall(data)
             except:
                 pass
-
 
     def main(self):
         config_file_name = 'config.json'
@@ -34,6 +32,8 @@ class Rtk:
             print('load config fail.')
             return
 
+        log.initialize_logging(configs['enableLog'].lower() == 'true')
+        log.info('main: start')
         self.server = ServerThread(configs['listenPort'])
         self.client = ClientThread(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
         self.server.start()
@@ -47,7 +47,7 @@ class Rtk:
         self.client.join()
         self.server.running = False
         self.server.join()
-        print('main: bye')
+        log.info('main: bye')
 
 
 if __name__ == '__main__':

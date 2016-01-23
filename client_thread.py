@@ -8,7 +8,7 @@
 
 import socket
 import threading
-import time
+import log
 
 BUFFER_SIZE = 4096
 
@@ -40,9 +40,10 @@ class ClientThread(threading.Thread):
                     client.close()
                 except:
                     pass
-                print('client thread: bye')
+                log.info('client thread: bye')
             except Exception as e:
-                print('client thread error: %s' % e)
+                log.error('client thread error: %s' % e)
+                self.running = False
 
     def connect(self):
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
