@@ -32,6 +32,7 @@ class ServerThread(threading.Thread):
                     log.info('new client from: %s' % str(addr))
                 except socket.timeout:
                     pass
+            server.close()
             self.close_all()
             log.info('server thread: bye')
         except Exception as e:
