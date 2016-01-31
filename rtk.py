@@ -9,7 +9,7 @@
 import json
 import log
 from server_thread import ServerThread
-from client_thread import ClientThread
+from client_daemon import ClientDaemon
 
 
 class Rtk:
@@ -38,21 +38,21 @@ class Rtk:
         log.initialize_logging(configs['enableLog'].lower() == 'true')
         log.info('main: start')
         self.server = ServerThread(configs['listenPort'])
-        self.client = ClientThread(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
+        self.client_daemon = ClientDaemon(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
         self.server.start()
-        self.client.start()
+        self.client_daemon.start()
 
         try:
             print("enter 'q' to quit. recv count: %d" % self.recv_count)
             while input() != 'q':
                 print("enter 'q' to quit. recv count: %d" % self.recv_count)
-                if not self.client.running or not self.server.running:
+                if not self.client_daemon.running or not self.server.running:
                     break
         except KeyboardInterrupt:
             pass
 
-        self.client.running = False
-        self.client.join()
+        self.client_daemon.stop_daemon()
+        self.client_daemon.join()
         self.server.running = False
         self.server.join()
         log.info('main: bye')
