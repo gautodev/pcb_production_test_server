@@ -22,7 +22,7 @@ def initialize_logging(tofile=True):
 
     # to file
     if tofile:
-        fh = logging.handlers.RotatingFileHandler('logs/rtk.log', backupCount=20)
+        fh = logging.handlers.RotatingFileHandler('logs/rtk.log', maxBytes=524288000, backupCount=10)
         fh.setLevel(logging.DEBUG)
         fh.doRollover()
         fh.setFormatter(formatter)
