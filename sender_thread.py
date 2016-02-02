@@ -27,7 +27,10 @@ class SenderThread(threading.Thread):
                 self.recv_count += 1
                 try:
                     (num_clients, num_alive_clients) = self.send_data(data)
+                    self.data_queue.task_done()
                     log.debug('send %d bytes to %d/%d clients' % (len(data), num_alive_clients, num_clients))
+                except ValueError as e:
+                    log.info('sender thread ValueError: %s' % e)
                 except Exception as e:
                     log.error('sender thread error: %s' % e)
             except queue.Empty:
