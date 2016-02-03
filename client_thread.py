@@ -39,6 +39,8 @@ class ClientThread(threading.Thread):
         while self.running:
             try:
                 data = client.recv(BUFFER_SIZE)
+                if len(data) == 0:
+                    raise RuntimeError('socket connection broken')
                 log.debug('recv %d bytes' % len(data))
                 self.data_queue.put(data)
                 timeout_count = 0
