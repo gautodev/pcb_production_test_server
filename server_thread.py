@@ -12,10 +12,10 @@ import log
 
 
 class ServerThread(threading.Thread):
-    def __init__(self, port):
+    def __init__(self, port, got_client_cb):
         super().__init__()
         self.port = port
-        self.clients = []
+        self.got_client_cb = got_client_cb
         self.running = True
 
     def run(self):
@@ -27,22 +27,13 @@ class ServerThread(threading.Thread):
             server.settimeout(3)    # timeout: 3s
             while self.running:
                 try:
-                    conn, addr = server.accept()
-                    self.clients.append(conn)
-                    log.info('new client from: %s' % str(addr))
+                    conn, address = server.accept()
+                    self.got_client_cb(conn, address)
+                    log.debug('new client from: %s' % str(address))
                 except socket.timeout:
                     pass
             server.close()
-            self.close_all()
             log.info('server thread: bye')
         except Exception as e:
             log.error('server thread error: %s' % e)
             self.running = False
-
-    def close_all(self):
-        for client in self.clients:
-            try:
-                client.close()
-            except:
-                pass
-        self.clients.clear()

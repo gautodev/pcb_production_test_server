@@ -15,11 +15,12 @@ BUFFER_SIZE = 4096
 
 
 class ClientThread(threading.Thread):
-    def __init__(self, server_ip, server_port, data_queue):
+    def __init__(self, server_ip, server_port, got_data_cb):
         super().__init__()
         self.server_ip = server_ip
         self.server_port = server_port
-        self.data_queue = data_queue
+        self.got_data_cb = got_data_cb
+        self.rcv_count = 0
         self.running = True
 
     def run(self):
@@ -41,8 +42,9 @@ class ClientThread(threading.Thread):
                 data = client.recv(BUFFER_SIZE)
                 if len(data) == 0:
                     raise RuntimeError('socket connection broken')
-                log.debug('recv %d bytes' % len(data))
-                self.data_queue.put(data)
+                self.rcv_count += 1
+                log.debug('rcv %d bytes. id: %d' % (len(data), self.rcv_count))
+                self.got_data_cb(data, self.rcv_count)
                 timeout_count = 0
             except socket.timeout:
                 timeout_count += 1
@@ -52,8 +54,10 @@ class ClientThread(threading.Thread):
                     log.debug('client timeout, reconnect')
         try:
             client.close()
-        except:
-            log.error('client exception when close.')
+        except socket.error:
+            pass
+        except Exception as e:
+            log.error('client exception when close: %s' % e)
 
     def connect(self):
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -6,44 +6,43 @@
 # Description   :
 #
 
+import socket
 import threading
 import queue
 import log
 
 
 class SenderThread(threading.Thread):
-    def __init__(self, clients, data_queue):
+    def __init__(self, client_socket, address, _id):
         super().__init__()
-        self.clients = clients
-        self.data_queue = data_queue
-        self.recv_count = 0
+        self.client_socket = client_socket
+        self.address = address
+        self.sender_id = _id
+        self.data_queue = queue.Queue()
         self.running = True
 
     def run(self):
-        log.info('sender thread: start')
+        log.info('sender thread %d: start, %s' % (self.sender_id, self.address))
         while self.running:
             try:
                 data = self.data_queue.get(timeout=1)
-                self.recv_count += 1
                 try:
-                    (num_clients, num_alive_clients) = self.send_data(data)
+                    self.client_socket.sendall(data)
                     self.data_queue.task_done()
-                    log.debug('send %d bytes to %d/%d clients' % (len(data), num_alive_clients, num_clients))
                 except ValueError as e:
-                    log.info('sender thread ValueError: %s' % e)
-                except Exception as e:
-                    log.error('sender thread error: %s' % e)
+                    log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))
             except queue.Empty:
                 pass
-        log.info('sender thread: bye')
+            except Exception as e:
+                log.error('sender thread %d error: %s' % (self.sender_id, e))
+                self.disconnect()
+                self.running = False
+        log.info('sender thread %d: bye' % self.sender_id)
 
-    def send_data(self, data):
-        clients = self.clients.copy()
-        num_alive_clients = 0
-        for c in clients:
-            try:
-                c.sendall(data)
-                num_alive_clients += 1
-            except:
-                pass
-        return len(clients), num_alive_clients
+    def disconnect(self):
+        try:
+            self.client_socket.close()
+        except socket.error:
+            pass
+        except Exception as e:
+            log.error('sender thread %d exception when close: %s' % (self.sender_id, e))
