@@ -17,7 +17,6 @@ class DispatcherThread(threading.Thread):
         super().__init__()
         self.data_queue = queue.Queue()
         self.clients = {}
-        print(self.clients)
         self.new_client_id = 0
         self.running = True
 

@@ -73,8 +73,7 @@ class ControlThread(threading.Thread):
         if self.client is not None:
             try:
                 self.client.sendall(b'bye')
-            except Exception as e:
-                print(e)
+            except:
                 pass
 
             try:
