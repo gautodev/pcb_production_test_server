@@ -16,13 +16,24 @@ from server_thread import ServerThread
 
 class Rtk:
     def __init__(self):
-        pass
+        self.server = None
+        self.controller = None
+        self.dispatcher = None
+        self.client = None
 
     def got_data_cb(self, data, rcv_count):
         self.dispatcher.data_queue.put((data, rcv_count))
 
     def got_client_cb(self, client_socket, address):
         self.dispatcher.add_client(client_socket, address)
+
+    def got_command_cb(self, command):
+        if command == 'reset server':
+            old_dispatcher = self.dispatcher
+            self.dispatcher = DispatcherThread()
+            old_dispatcher.running = False
+            old_dispatcher.join()
+            self.dispatcher.start()
 
     def main(self):
         config_file_name = 'config.json'
@@ -37,7 +48,7 @@ class Rtk:
         log.info('main: start')
 
         self.server = ServerThread(configs['listenPort'], self.got_client_cb)
-        self.controller = ControlThread(configs['controlPort'])
+        self.controller = ControlThread(configs['controlPort'], self.got_command_cb)
         self.dispatcher = DispatcherThread()
         self.client = ClientThread(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
 
@@ -60,10 +71,10 @@ class Rtk:
         self.controller.join()
         self.client.running = False
         self.client.join()
-        self.dispatcher.running = False
-        self.dispatcher.join()
         self.server.running = False
         self.server.join()
+        self.dispatcher.running = False
+        self.dispatcher.join()
         log.info('main: bye')
 
 

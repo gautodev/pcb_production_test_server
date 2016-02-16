@@ -34,7 +34,7 @@ class DispatcherThread(threading.Thread):
             except queue.Empty:
                 pass
         self.stop_all_clients()
-        log.info('sender thread: bye')
+        log.info('dispatcher thread: bye')
 
     def send_data(self, data):
         clients = self.clients.copy()
