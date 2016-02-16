@@ -22,7 +22,7 @@ class ControlThread(threading.Thread):
         self.running = True
 
     def run(self):
-        log.info('control thread: start')
+        log.info('control thread: start, port: %d' % self.port)
         try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server.bind(('0.0.0.0', self.port))
@@ -70,16 +70,17 @@ class ControlThread(threading.Thread):
         log.debug('control rcv %d bytes.' % len(data))
 
     def disconnect_client(self):
-        try:
-            self.client.sendall(b'bye')
-        except Exception as e:
-            print(e)
-            pass
+        if self.client is not None:
+            try:
+                self.client.sendall(b'bye')
+            except Exception as e:
+                print(e)
+                pass
 
-        try:
-            self.client.close()
-        except socket.error:
-            pass
-        except Exception as e:
-            log.error('control client exception when close: %s' % e)
+            try:
+                self.client.close()
+            except socket.error:
+                pass
+            except Exception as e:
+                log.error('control client exception when close: %s' % e)
         self.client = None

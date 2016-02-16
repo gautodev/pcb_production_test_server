@@ -19,7 +19,7 @@ class ServerThread(threading.Thread):
         self.running = True
 
     def run(self):
-        log.info('server thread: start')
+        log.info('server thread: start, port: %d' % self.port)
         try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server.bind(('0.0.0.0', self.port))
