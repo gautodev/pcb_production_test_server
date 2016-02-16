@@ -54,4 +54,5 @@ class DispatcherThread(threading.Thread):
     def stop_all_clients(self):
         for _id, sender in self.clients.items():
             sender.running = False
+        for _id, sender in self.clients.items():
             sender.join()
