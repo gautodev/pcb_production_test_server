@@ -46,6 +46,7 @@ class ControlThread(threading.Thread):
     def accept_client(self, server):
         try:
             conn, address = server.accept()
+            self.disconnect_client()
             self.client = conn
             self.client.settimeout(3)
             log.info('new control client from: %s' % str(address))
