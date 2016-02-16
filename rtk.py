@@ -8,6 +8,7 @@
 
 import json
 import log
+from control_thread import ControlThread
 from client_thread import ClientThread
 from dispatcher_thread import DispatcherThread
 from server_thread import ServerThread
@@ -36,10 +37,12 @@ class Rtk:
         log.info('main: start')
 
         self.server = ServerThread(configs['listenPort'], self.got_client_cb)
+        self.controller = ControlThread(configs['controlPort'])
         self.dispatcher = DispatcherThread()
         self.client = ClientThread(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
 
         self.server.start()
+        self.controller.start()
         self.dispatcher.start()
         self.client.start()
 
@@ -53,6 +56,8 @@ class Rtk:
         except KeyboardInterrupt:
             pass
 
+        self.controller.running = False
+        self.controller.join()
         self.client.running = False
         self.client.join()
         self.dispatcher.running = False

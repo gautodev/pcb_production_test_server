@@ -61,6 +61,7 @@ class ClientThread(threading.Thread):
 
     def connect(self):
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.settimeout(10)
         client.connect((self.server_ip, self.server_port))
         client.settimeout(3)
         return client

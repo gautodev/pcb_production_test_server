@@ -2,5 +2,6 @@
     "serverIpAddress": "127.0.0.1",
     "serverPort": 10000,
     "listenPort": 10000,
+    "controlPort": 10001,
     "enableLog": "true"
 }
