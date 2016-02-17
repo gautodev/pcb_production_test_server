@@ -38,8 +38,8 @@ class SenderThread(threading.Thread):
                     log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))
                 # rcv useless data
                 try:
-                    self.client_socket.setblocking(False)
-                    self.client_socket.recv(4096)
+                    self.client_socket.settimeout(0.1)
+                    self.client_socket.recv(256)
                 except socket.timeout:
                     pass
             except queue.Empty:
