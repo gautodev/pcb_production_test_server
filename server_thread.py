@@ -28,6 +28,7 @@ class ServerThread(threading.Thread):
             while self.running:
                 try:
                     conn, address = server.accept()
+                    conn.settimeout(3)
                     self.got_client_cb(conn, address)
                     log.debug('new client from: %s' % str(address))
                 except socket.timeout:
