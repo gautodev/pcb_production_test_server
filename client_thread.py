@@ -69,7 +69,6 @@ class ClientThread(threading.Thread):
         client.settimeout(3)
         return client
 
-
     def reconnect(self, client):
         try:
             client.close()

@@ -17,7 +17,6 @@ class DispatcherThread(threading.Thread):
         super().__init__()
         self.data_queue = queue.Queue()
         self.clients = {}
-        self.new_client_id = 0
         self.running = True
 
     def run(self):
@@ -46,9 +45,9 @@ class DispatcherThread(threading.Thread):
         return len(clients)
 
     def add_client(self, client_socket, address):
-        sender = SenderThread(client_socket, address, self.new_client_id)
-        self.clients[self.new_client_id] = sender
-        self.new_client_id += 1
+        sender = SenderThread(client_socket, address, DispatcherThread.new_client_id)
+        self.clients[DispatcherThread.new_client_id] = sender
+        DispatcherThread.new_client_id += 1
         sender.start()
 
     def stop_all_clients(self):
@@ -56,3 +55,5 @@ class DispatcherThread(threading.Thread):
             sender.running = False
         for _id, sender in self.clients.items():
             sender.join()
+
+DispatcherThread.new_client_id = 0

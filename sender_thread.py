@@ -25,12 +25,23 @@ class SenderThread(threading.Thread):
         log.info('sender thread %d: start, %s' % (self.sender_id, self.address))
         while self.running:
             try:
+                # ignore old data
+                if self.data_queue.qsize() > 10:
+                    self.data_queue.empty()
+                # send data
                 data = self.data_queue.get(timeout=1)
                 try:
+                    self.client_socket.settimeout(5)
                     self.client_socket.sendall(data)
                     self.data_queue.task_done()
                 except ValueError as e:
                     log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))
+                # rcv useless data
+                try:
+                    self.client_socket.setblocking(False)
+                    self.client_socket.recv(4096)
+                except socket.timeout:
+                    pass
             except queue.Empty:
                 pass
             except Exception as e:

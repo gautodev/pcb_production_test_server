@@ -32,7 +32,6 @@ class Rtk:
             old_dispatcher = self.dispatcher
             self.dispatcher = DispatcherThread()
             old_dispatcher.running = False
-            old_dispatcher.join()
             self.dispatcher.start()
 
     def main(self):
