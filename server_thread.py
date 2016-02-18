@@ -22,6 +22,7 @@ class ServerThread(threading.Thread):
         log.info('server thread: start, port: %d' % self.port)
         try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.bind(('0.0.0.0', self.port))
             server.listen(1)
             server.settimeout(3)    # timeout: 3s
