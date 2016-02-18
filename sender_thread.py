@@ -19,6 +19,7 @@ class SenderThread(threading.Thread):
         self.address = address
         self.sender_id = _id
         self.data_queue = queue.Queue()
+        self.send_count = 0
         self.running = True
 
     def run(self):
@@ -33,6 +34,7 @@ class SenderThread(threading.Thread):
                 try:
                     self.client_socket.settimeout(5)
                     self.client_socket.sendall(data)
+                    self.send_count += 1
                     self.data_queue.task_done()
                 except ValueError as e:
                     log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))

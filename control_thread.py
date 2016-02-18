@@ -8,6 +8,7 @@
 
 import socket
 import threading
+import queue
 import log
 
 BUFFER_SIZE = 4096
@@ -23,6 +24,7 @@ class ControlThread(threading.Thread):
         self.client = None
         self.buffer = []
         self.is_in_command = False
+        self.msg_queue = queue.Queue()
         self.running = True
 
     def run(self):
@@ -36,6 +38,7 @@ class ControlThread(threading.Thread):
                 self.accept_client(server)
                 self.receive_command()
                 self.resolve_command()
+                self.send_message()
             server.close()
             self.disconnect_client()
             log.info('control thread: bye')
@@ -99,6 +102,18 @@ class ControlThread(threading.Thread):
             raise RuntimeError('socket connection broken')
         self.buffer.extend(data)
         log.debug('control rcv %d bytes.' % len(data))
+
+    def send_message(self):
+        while self.msg_queue.qsize() > 0:
+            try:
+                msg = self.msg_queue.get(False)
+                self.msg_queue.task_done()
+                try:
+                    self.client.sendall(bytearray(msg, 'utf-8'))
+                except:
+                    pass
+            except queue.Empty:
+                break
 
     def disconnect_client(self):
         if self.client is not None:

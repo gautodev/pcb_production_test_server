@@ -33,6 +33,10 @@ class Rtk:
             self.dispatcher = DispatcherThread()
             old_dispatcher.running = False
             self.dispatcher.start()
+        elif command == 'list':
+            self.controller.msg_queue.put('client count: %d\r\n' % len(self.dispatcher.clients))
+            for _id, sender in self.dispatcher.clients.copy().items():
+                self.controller.msg_queue.put('%d: %s, %d\r\n' % (sender.sender_id, sender.address, sender.send_count))
 
     def main(self):
         config_file_name = 'config.json'
