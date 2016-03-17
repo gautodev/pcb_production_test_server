@@ -39,17 +39,20 @@ class Rtk:
                 self.controller.msg_queue.put('%d: %s, %d\r\n' % (sender.sender_id, sender.address, sender.send_count))
 
     def main(self):
+        # config
         config_file_name = 'config.json'
         try:
             with open(config_file_name) as config_data:
                 configs = json.load(config_data)
         except:
-            print('load config fail.')
+            print('failed to load config from config.json.')
             return
 
+        # log init
         log.initialize_logging(configs['enableLog'].lower() == 'true')
         log.info('main: start')
 
+        # threads
         self.server = ServerThread(configs['listenPort'], self.got_client_cb)
         self.controller = ControlThread(configs['controlPort'], self.got_command_cb)
         self.dispatcher = DispatcherThread()
@@ -60,6 +63,7 @@ class Rtk:
         self.dispatcher.start()
         self.client.start()
 
+        # keyboard
         try:
             print("enter 'q' to quit")
             while input() != 'q':
@@ -70,6 +74,7 @@ class Rtk:
         except KeyboardInterrupt:
             pass
 
+        # quit & clean up
         self.controller.running = False
         self.controller.join()
         self.client.running = False

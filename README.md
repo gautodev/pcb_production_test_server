@@ -1,9 +1,20 @@
 # rtk_trans
 直接转发
 
+## Intro
+rtk_trans 通过 socket 连接到一台上层服务器并接收数据。
+同时，监听来自若干下层客户端的连接，
+并将数据转发到下层客户端。
+
+## Setup
+```bash
+cp ./docs/config.json.default ./config.json
+```
+并按需修改配置文件`config.json`。
+
 ## Usage
 ```bash
-python rtk.py
+python3 rtk.py
 ```
 
 按回车查询状态。按'q'+回车退出程序。
@@ -12,6 +23,9 @@ python rtk.py
 
 - `reset server` 关闭所有连到 rtk_trans 的客户 socket
 - `list` 查询
+
+## 其他说明
+* [主要模块](docs/modules.md)
 
 ## License
 All rights reserved.
