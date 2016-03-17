@@ -13,7 +13,16 @@ import log
 
 
 class SenderThread(threading.Thread):
+    """负责与一个客户端通信的线程"""
+
     def __init__(self, client_socket, address, _id):
+        """构造函数
+
+        Args:
+            client_socket: 与客户端通信的 socket
+            address: 客户端地址
+            _id: SenderThread 的 ID
+        """
         super().__init__()
         self.client_socket = client_socket
         self.address = address
@@ -23,6 +32,11 @@ class SenderThread(threading.Thread):
         self.running = True
 
     def run(self):
+        """线程主函数
+
+        循环运行，接收来自客户端的数据并丢弃，向客户端发送 data_queue 中的数据包。
+        当 data_queue 过长时，丢弃旧的数据包。
+        """
         log.info('sender thread %d: start, %s' % (self.sender_id, self.address))
         while self.running:
             try:
@@ -48,11 +62,12 @@ class SenderThread(threading.Thread):
                 pass
             except Exception as e:
                 log.error('sender thread %d error: %s' % (self.sender_id, e))
-                self.disconnect()
                 self.running = False
+        self.disconnect()
         log.info('sender thread %d: bye' % self.sender_id)
 
     def disconnect(self):
+        """断开连接"""
         try:
             self.client_socket.close()
         except socket.error:

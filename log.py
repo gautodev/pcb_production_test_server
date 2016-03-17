@@ -13,7 +13,15 @@ from logging import handlers
 logger = None
 
 
-def initialize_logging(tofile=True):
+def initialize_logging(to_file=True):
+    """初始化日志系统
+
+    使用本模块中的其他方法之前必须调用本方法。
+
+    Args:
+        to_file: 写入到文件系统 (default True)
+    """
+
     global logger
     logger = logging.getLogger('rtk')
     logger.setLevel(logging.DEBUG)
@@ -21,7 +29,7 @@ def initialize_logging(tofile=True):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # to file
-    if tofile:
+    if to_file:
         fh = logging.handlers.RotatingFileHandler('logs/rtk.log', maxBytes=524288000, backupCount=10)
         fh.setLevel(logging.DEBUG)
         fh.doRollover()

@@ -12,13 +12,25 @@ import log
 
 
 class ServerThread(threading.Thread):
+    """监听来自客户端的连接的线程"""
+
     def __init__(self, port, got_client_cb):
+        """构造函数
+
+        Args:
+            port: 监听的端口
+            got_client_cb: 接受到客户端连接后的回调函数
+        """
         super().__init__()
         self.port = port
         self.got_client_cb = got_client_cb
         self.running = True
 
     def run(self):
+        """线程主函数
+
+        循环运行，接受新的客户端的连接。
+        """
         log.info('server thread: start, port: %d' % self.port)
         try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

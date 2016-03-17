@@ -22,12 +22,29 @@ class Rtk:
         self.client = None
 
     def got_data_cb(self, data, rcv_count):
+        """接收到差分数据的回调函数
+
+        Args:
+            data: 收到的数据包
+            rcv_count: 收到的数据包的编号
+        """
         self.dispatcher.data_queue.put((data, rcv_count))
 
     def got_client_cb(self, client_socket, address):
+        """接受来自下层客户端的 socket 连接的回调函数
+
+        Args:
+            client_socket: 与客户端连接的 socket
+            address: 客户端地址
+        """
         self.dispatcher.add_client(client_socket, address)
 
     def got_command_cb(self, command):
+        """接收到来自控制端口的指令的回调函数
+
+        Args:
+            command: 待处理的命令
+        """
         if command == 'reset server':
             old_dispatcher = self.dispatcher
             self.dispatcher = DispatcherThread()
