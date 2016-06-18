@@ -10,6 +10,7 @@ import os
 import sys
 import json
 import time
+import signal
 from rtk_trans import log
 from rtk_trans.control_thread import ControlThread
 from rtk_trans.client_thread import ClientThread
@@ -23,6 +24,7 @@ class Rtk:
         self.controller = None
         self.dispatcher = None
         self.client = None
+        self.is_interrupt = False
 
     def got_data_cb(self, data, rcv_count):
         """接收到差分数据的回调函数
@@ -58,6 +60,9 @@ class Rtk:
             for _id, sender in self.dispatcher.clients.copy().items():
                 self.controller.msg_queue.put('%d: %s, %d\r\n' % (sender.sender_id, sender.address, sender.send_count))
 
+    def exit_by_signal(self, signum, frame):
+        self.is_interrupt = True
+
     def wait_for_keyboard(self):
         """quit when press q or press ctrl-c, or exception from other threads"""
         try:
@@ -71,7 +76,8 @@ class Rtk:
             pass
         except EOFError:
             # no input
-            while True:
+            signal.signal(signal.SIGINT, self.exit_by_signal)
+            while not self.is_interrupt:
                 time.sleep(1)
                 if not self.client.running or not self.server.running:
                     break
