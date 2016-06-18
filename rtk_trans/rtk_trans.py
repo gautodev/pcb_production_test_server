@@ -9,6 +9,7 @@
 import os
 import sys
 import json
+import time
 from rtk_trans import log
 from rtk_trans.control_thread import ControlThread
 from rtk_trans.client_thread import ClientThread
@@ -57,12 +58,30 @@ class Rtk:
             for _id, sender in self.dispatcher.clients.copy().items():
                 self.controller.msg_queue.put('%d: %s, %d\r\n' % (sender.sender_id, sender.address, sender.send_count))
 
+    def wait_for_keyboard(self):
+        """quit when press q or press ctrl-c, or exception from other threads"""
+        try:
+            print("enter 'q' to quit")
+            while input() != 'q':
+                print("enter 'q' to quit. rcv count: %d, client count: %d"
+                      % (self.client.rcv_count, len(self.dispatcher.clients)))
+                if not self.client.running or not self.server.running:
+                    break
+        except KeyboardInterrupt:
+            pass
+        except EOFError:
+            # no input
+            while True:
+                time.sleep(1)
+                if not self.client.running or not self.server.running:
+                    break
+
     def main(self):
         # config
         config_file_name = os.path.join(sys.path[0], 'conf/config.json')
         try:
-            with open(config_file_name) as config_data:
-                configs = json.load(config_data)
+            with open(config_file_name) as config_fp:
+                configs = json.load(config_fp)
         except:
             print('failed to load config from config.json.')
             return
@@ -82,16 +101,8 @@ class Rtk:
         self.dispatcher.start()
         self.client.start()
 
-        # keyboard
-        try:
-            print("enter 'q' to quit")
-            while input() != 'q':
-                print("enter 'q' to quit. rcv count: %d, client count: %d"
-                      % (self.client.rcv_count, len(self.dispatcher.clients)))
-                if not self.client.running or not self.server.running:
-                    break
-        except KeyboardInterrupt:
-            pass
+        # wait
+        self.wait_for_keyboard()
 
         # quit & clean up
         self.controller.running = False
