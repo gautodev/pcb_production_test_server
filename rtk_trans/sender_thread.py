@@ -9,7 +9,7 @@
 import socket
 import threading
 import queue
-import log
+from rtk_trans import log
 
 
 class SenderThread(threading.Thread):

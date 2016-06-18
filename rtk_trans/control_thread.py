@@ -9,7 +9,7 @@
 import socket
 import threading
 import queue
-import log
+from rtk_trans import log
 
 BUFFER_SIZE = 4096
 CMD_BEGIN = [c for c in b'*#*#']    # 命令起始标记

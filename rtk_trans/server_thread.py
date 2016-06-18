@@ -8,7 +8,7 @@
 
 import socket
 import threading
-import log
+from rtk_trans import log
 
 
 class ServerThread(threading.Thread):

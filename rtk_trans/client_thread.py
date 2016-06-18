@@ -9,7 +9,7 @@
 import socket
 import threading
 import time
-import log
+from rtk_trans import log
 
 BUFFER_SIZE = 4096
 

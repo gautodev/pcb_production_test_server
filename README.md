@@ -8,16 +8,19 @@ rtk_trans 通过 socket 连接到一台上层服务器并接收数据。
 
 ## Setup
 ```bash
-cp ./docs/config.json.default ./config.json
+cp ./docs/config.json.default ./conf/config.json
 ```
-并按需修改配置文件`config.json`。
+并按需修改配置文件`conf/config.json`。
 
 ## Usage
+- 启动方法
 ```bash
 python3 rtk.py
+# or
+./start.sh
 ```
 
-按回车查询状态。按'q'+回车退出程序。
+按回车查询状态。按'q'+回车或Ctrl+c退出程序。
 
 通过 socket 发送命令到 `controlPort` 端口，命令格式为 `*#*#command#*#*`。
 
