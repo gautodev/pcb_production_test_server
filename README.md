@@ -1,10 +1,12 @@
-# rtk_trans
-直接转发
+# pcb_production_test_server
+PCB板卡生产测试服务器
 
 ## Intro
-rtk_trans 通过 socket 连接到一台上层服务器并接收数据。
-同时，监听来自若干下层客户端的连接，
-并将数据转发到下层客户端。
+主要功能：
+
+1. 转发差分数据
+2. 接收客户端的心跳信息
+3. 向管理端发送当前客户端状态
 
 ## Setup
 ```bash
