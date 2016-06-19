@@ -15,9 +15,10 @@ from rtk_trans.sender_thread import SenderThread
 class DispatcherThread(threading.Thread):
     """分发收到的差分数据的线程"""
 
-    def __init__(self):
+    def __init__(self, got_heartbeat_cb):
         """构造函数"""
         super().__init__()
+        self.got_heartbeat_cb = got_heartbeat_cb
         self.data_queue = queue.Queue()
         self.clients = {}
         self.running = True
@@ -65,7 +66,7 @@ class DispatcherThread(threading.Thread):
             client_socket: 与客户端通信的 socket
             address: 客户端地址
         """
-        sender = SenderThread(client_socket, address, DispatcherThread.new_client_id)
+        sender = SenderThread(client_socket, address, DispatcherThread.new_client_id, self.got_heartbeat_cb)
         self.clients[DispatcherThread.new_client_id] = sender
         DispatcherThread.new_client_id += 1
         sender.start()

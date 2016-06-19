@@ -16,10 +16,12 @@ from rtk_trans.control_thread import ControlThread
 from rtk_trans.client_thread import ClientThread
 from rtk_trans.dispatcher_thread import DispatcherThread
 from rtk_trans.server_thread import ServerThread
+from rtk_trans.pcb_manager import PcbManager
 
 
 class Rtk:
     def __init__(self):
+        self.pcb_manager = PcbManager()
         self.server = None
         self.controller = None
         self.dispatcher = None
@@ -52,13 +54,15 @@ class Rtk:
         """
         if command == 'reset server':
             old_dispatcher = self.dispatcher
-            self.dispatcher = DispatcherThread()
+            self.dispatcher = DispatcherThread(self.pcb_manager.on_recv_heartbeat)
             old_dispatcher.running = False
             self.dispatcher.start()
         elif command == 'list':
             self.controller.msg_queue.put('client count: %d\r\n' % len(self.dispatcher.clients))
             for _id, sender in self.dispatcher.clients.copy().items():
                 self.controller.msg_queue.put('%d: %s, %d\r\n' % (sender.sender_id, sender.address, sender.send_count))
+        elif command == 'pcb':
+            self.controller.msg_queue.put(self.pcb_manager.get_active_pcbs_info())
 
     def exit_by_signal(self, signum, frame):
         self.is_interrupt = True
@@ -99,7 +103,7 @@ class Rtk:
         # threads
         self.server = ServerThread(configs['listenPort'], self.got_client_cb)
         self.controller = ControlThread(configs['controlPort'], self.got_command_cb)
-        self.dispatcher = DispatcherThread()
+        self.dispatcher = DispatcherThread(self.pcb_manager.on_recv_heartbeat)
         self.client = ClientThread(configs['serverIpAddress'], configs['serverPort'], self.got_data_cb)
 
         self.server.start()

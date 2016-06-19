@@ -27,7 +27,8 @@ python3 rtk.py
 通过 socket 发送命令到 `controlPort` 端口，命令格式为 `*#*#command#*#*`。
 
 - `reset server` 关闭所有连到 rtk_trans 的客户 socket
-- `list` 查询
+- `list` 查询与客户端的 socket 连接
+- `pcb` 查询客户端 PCB 的心跳包状态，格式为 `设备ID-解状态-初次心跳时间-最近心跳时间\r\n`
 
 ## 其他说明
 * [主要模块](docs/modules.md)

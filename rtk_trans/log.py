@@ -30,7 +30,14 @@ def initialize_logging(to_file=True):
 
     # to file
     if to_file:
-        fh = logging.handlers.RotatingFileHandler('logs/rtk.log', maxBytes=524288000, backupCount=10)
+        # >= info
+        fh = logging.handlers.RotatingFileHandler('logs/rtk.log', maxBytes=200*1024*1024, backupCount=10)
+        fh.setLevel(logging.INFO)
+        fh.doRollover()
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+        # >= debug
+        fh = logging.handlers.RotatingFileHandler('logs/debug.log', maxBytes=500*1024*1024, backupCount=5)
         fh.setLevel(logging.DEBUG)
         fh.doRollover()
         fh.setFormatter(formatter)

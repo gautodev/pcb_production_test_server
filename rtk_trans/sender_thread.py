@@ -9,25 +9,29 @@
 import socket
 import threading
 import queue
+import datetime
 from rtk_trans import log
 
 
 class SenderThread(threading.Thread):
     """负责与一个客户端通信的线程"""
 
-    def __init__(self, client_socket, address, _id):
+    def __init__(self, client_socket, address, _id, got_heartbeat_cb):
         """构造函数
 
         Args:
             client_socket: 与客户端通信的 socket
             address: 客户端地址
             _id: SenderThread 的 ID
+            got_heartbeat_cb: 接收到心跳包的回调函数
         """
         super().__init__()
         self.client_socket = client_socket
         self.address = address
         self.sender_id = _id
+        self.got_heartbeat_cb = got_heartbeat_cb
         self.data_queue = queue.Queue()
+        self.data_received = ''
         self.send_count = 0
         self.running = True
 
@@ -52,10 +56,13 @@ class SenderThread(threading.Thread):
                     self.data_queue.task_done()
                 except ValueError as e:
                     log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))
-                # rcv useless data
+                # rcv heartbeat data
                 try:
-                    self.client_socket.settimeout(0.1)
-                    self.client_socket.recv(256)
+                    self.client_socket.settimeout(1)
+                    new_recv_data = self.client_socket.recv(1024)
+                    if len(new_recv_data) > 0:
+                        self.data_received += new_recv_data.decode(encoding='utf-8', errors='ignore')
+                    self.parse_heartbeat_recv_buffer()  # 分包
                 except socket.timeout:
                     pass
             except queue.Empty:
@@ -74,3 +81,16 @@ class SenderThread(threading.Thread):
             pass
         except Exception as e:
             log.error('sender thread %d exception when close: %s' % (self.sender_id, e))
+
+    def parse_heartbeat_recv_buffer(self):
+        """对收到的心跳包进行分包处理，并通知
+
+        心跳包格式为：
+        设备ID-解状态\r\n
+        """
+        heartbeats = self.data_received.split('\r\n')
+        if len(heartbeats) > 1:
+            self.data_received = heartbeats[-1]     # 只有一个线程访问 self.data_received
+            now = datetime.datetime.now()
+            for heartbeat_str in heartbeats[:-1]:
+                self.got_heartbeat_cb(self.sender_id, heartbeat_str, now)

@@ -22,3 +22,6 @@ socket client 线程，主动连接到差分源服务器，并接收数据。
 
 #### control_thread
 查询状态，调试（或维护）用。
+
+#### pcb_client / pcb_manager
+PCB 心跳管理工具
