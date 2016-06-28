@@ -7,7 +7,7 @@
 # 
 
 import datetime
-from rtk_trans import log
+from production import log
 
 PCB_MAX_TTL = 60
 

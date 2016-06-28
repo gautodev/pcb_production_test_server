@@ -7,8 +7,8 @@
 # 
 
 import threading
-from rtk_trans.pcb_client import PcbClient
-from rtk_trans import log
+from production.pcb_client import PcbClient
+from production import log
 
 
 class PcbManager:

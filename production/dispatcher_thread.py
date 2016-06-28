@@ -8,8 +8,8 @@
 
 import threading
 import queue
-from rtk_trans import log
-from rtk_trans.sender_thread import SenderThread
+from production import log
+from production.sender_thread import SenderThread
 
 
 class DispatcherThread(threading.Thread):

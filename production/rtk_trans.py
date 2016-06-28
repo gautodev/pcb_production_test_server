@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
-# File          : rtk_trans.py
+# File          : production.py
 # Author        : bssthu
 # Project       : rtk_trans
 # Description   : socket 转发数据
@@ -11,12 +11,12 @@ import sys
 import json
 import time
 import signal
-from rtk_trans import log
-from rtk_trans.control_thread import ControlThread
-from rtk_trans.client_thread import ClientThread
-from rtk_trans.dispatcher_thread import DispatcherThread
-from rtk_trans.server_thread import ServerThread
-from rtk_trans.pcb_manager import PcbManager
+from production import log
+from production.control_thread import ControlThread
+from production.client_thread import ClientThread
+from production.dispatcher_thread import DispatcherThread
+from production.server_thread import ServerThread
+from production.pcb_manager import PcbManager
 
 
 class Rtk:

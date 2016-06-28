@@ -1,3 +1,3 @@
 #!/bin/sh
 # -*- coding:utf-8 -*-
-nohup python3 rtk.py &
+nohup python3 production.py &

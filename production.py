@@ -2,11 +2,11 @@
 # -*- coding:utf-8 -*-
 # File          : rtk.py
 # Author        : bssthu
-# Project       : rtk_trans
+# Project       : pcb_production_test_server
 # Description   : socket 转发数据
 # 
 
-from rtk_trans.rtk_trans import Rtk
+from production.rtk_trans import Rtk
 
 
 if __name__ == '__main__':
