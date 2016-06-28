@@ -17,7 +17,7 @@ cp ./docs/config.json.default ./conf/config.json
 ## Usage
 - 启动方法
 ```bash
-python3 rtk.py
+python3 production_test_server.py
 # or
 ./start.sh
 ```
@@ -28,7 +28,9 @@ python3 rtk.py
 
 - `reset server` 关闭所有连到 rtk_trans 的客户 socket
 - `list` 查询与客户端的 socket 连接
-- `pcb` 查询客户端 PCB 的心跳包状态，格式为 `设备ID-解状态-初次心跳时间-最近心跳时间\r\n`
+- `pcb` 查询客户端 PCB 的心跳包状态，
+第一行为设备数量n，
+接下来n行的格式为 `设备ID-解状态-初次心跳时间-最近心跳时间\r\n`
 
 ## 其他说明
 * [主要模块](docs/modules.md)
