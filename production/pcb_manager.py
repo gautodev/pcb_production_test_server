@@ -65,4 +65,4 @@ class PcbManager:
             log.error('pcb manager: when get pcb info: %s' % e)
         self.lock.release()
 
-        return '%d\r\n%s\r\n' % (len(pcb_str_list), '\r\n'.join(pcb_str_list))
+        return '%d\r\n%s\r\n$bye\r\n' % (len(pcb_str_list), '\r\n'.join(pcb_str_list))

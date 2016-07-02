@@ -31,6 +31,7 @@ python3 production_test_server.py
 - `pcb` 查询客户端 PCB 的心跳包状态，
 第一行为设备数量n，
 接下来n行的格式为 `设备ID-解状态-初次心跳时间-最近心跳时间\r\n`
+最后一行为 `$bye\r\n`
 
 ## 其他说明
 * [主要模块](docs/modules.md)
