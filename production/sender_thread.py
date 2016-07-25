@@ -48,12 +48,14 @@ class SenderThread(threading.Thread):
                 if self.data_queue.qsize() > 10:
                     self.data_queue.empty()
                 # send data
-                data = self.data_queue.get(timeout=1)
                 try:
+                    data = self.data_queue.get(timeout=1)
                     self.client_socket.settimeout(5)
                     self.client_socket.sendall(data)
                     self.send_count += 1
                     self.data_queue.task_done()
+                except queue.Empty:
+                    pass
                 except ValueError as e:
                     log.warning('sender thread %d ValueError: %s' % (self.sender_id, e))
                 # rcv heartbeat data
@@ -65,8 +67,6 @@ class SenderThread(threading.Thread):
                     self.parse_heartbeat_recv_buffer()  # 分包
                 except socket.timeout:
                     pass
-            except queue.Empty:
-                pass
             except Exception as e:
                 log.error('sender thread %d error: %s' % (self.sender_id, e))
                 self.running = False
