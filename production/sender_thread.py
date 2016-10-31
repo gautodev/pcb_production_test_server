@@ -88,9 +88,10 @@ class SenderThread(threading.Thread):
         心跳包格式为：
         设备ID-解状态\r\n
         """
-        heartbeats = self.data_received.split('\r\n')
+        heartbeats = self.data_received.split('\r')
         if len(heartbeats) > 1:
             self.data_received = heartbeats[-1]     # 只有一个线程访问 self.data_received
             now = datetime.datetime.now()
             for heartbeat_str in heartbeats[:-1]:
-                self.got_heartbeat_cb(self.sender_id, heartbeat_str, now)
+                if heartbeat_str.startswith('\n'):
+                    self.got_heartbeat_cb(self.sender_id, heartbeat_str[1:], now)
