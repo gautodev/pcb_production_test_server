@@ -10,6 +10,7 @@ import socket
 import threading
 import queue
 import datetime
+from production import utils
 from production import log
 
 
@@ -31,7 +32,7 @@ class SenderThread(threading.Thread):
         self.sender_id = _id
         self.got_heartbeat_cb = got_heartbeat_cb
         self.data_queue = queue.Queue()
-        self.data_received = ''
+        self.data_received = b''
         self.send_count = 0
         self.running = True
 
@@ -63,7 +64,7 @@ class SenderThread(threading.Thread):
                     self.client_socket.settimeout(1)
                     new_recv_data = self.client_socket.recv(1024)
                     if len(new_recv_data) > 0:
-                        self.data_received += new_recv_data.decode(encoding='utf-8', errors='ignore')
+                        self.data_received += new_recv_data
                     self.parse_heartbeat_recv_buffer()  # 分包
                 except socket.timeout:
                     pass
@@ -88,10 +89,10 @@ class SenderThread(threading.Thread):
         心跳包格式为：
         设备ID-解状态\r\n
         """
-        heartbeats = self.data_received.split('\r')
+        heartbeats = utils.split(self.data_received, '\r')
         if len(heartbeats) > 1:
             self.data_received = heartbeats[-1]     # 只有一个线程访问 self.data_received
             now = datetime.datetime.now()
-            for heartbeat_str in heartbeats[:-1]:
-                if heartbeat_str.startswith('\n'):
-                    self.got_heartbeat_cb(self.sender_id, heartbeat_str[1:], now)
+            for heartbeat in heartbeats[:-1]:
+                if heartbeat.startswith(b'\n'):
+                    self.got_heartbeat_cb(self.sender_id, heartbeat[1:], now)

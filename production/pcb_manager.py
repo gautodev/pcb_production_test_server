@@ -8,6 +8,7 @@
 
 import threading
 from production.pcb_client import PcbClient
+from production import utils
 from production import log
 
 
@@ -27,13 +28,13 @@ class PcbManager:
 
         Args:
             sender_id: 收到心跳包的线程 ID
-            heartbeat: 心跳包
+            heartbeat (bytes): 心跳包
             timestamp: 收到心跳包的时间
         """
         log.debug('pcb manager: from sender %d: %s' % (sender_id, heartbeat))
         self.lock.acquire()
         try:
-            device_id, status = heartbeat.split('-')
+            device_id, status = utils.split(heartbeat, '-')
 
             # 更新 pcb 表
             pcb = self.pcbs.get(device_id)
