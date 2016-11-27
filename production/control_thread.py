@@ -149,7 +149,9 @@ class ControlThread(threading.Thread):
                 msg = self.msg_queue.get(False)
                 self.msg_queue.task_done()
                 try:
-                    self.client.sendall(bytearray(msg, 'utf-8'))
+                    if isinstance(msg, str):
+                        msg = bytearray(msg, 'utf-8')
+                    self.client.sendall(msg)
                 except:
                     pass
             except queue.Empty:

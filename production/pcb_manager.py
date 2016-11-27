@@ -49,7 +49,7 @@ class PcbManager:
 
     def get_active_pcbs_info(self):
         """读取当前客户列表"""
-        pcb_str_list = []
+        pcb_info_list = b''
 
         # 检查 pcb 表
         self.lock.acquire()
@@ -58,12 +58,14 @@ class PcbManager:
                 if not pcb.is_alive():
                     del self.pcbs[device_id]
                 else:
-                    pcb_str_list.append(
-                        '-'.join((pcb.device_id, pcb.status,
-                                  pcb.timestamp_init.strftime('%Y/%m/%d,%H:%M:%S'),
-                                  pcb.timestamp_last_active.strftime('%Y/%m/%d,%H:%M:%S'))))
+                    line = (
+                        pcb.device_id, pcb.status,
+                        bytes(pcb.timestamp_init.strftime('%Y/%m/%d,%H:%M:%S'), 'utf-8'),
+                        bytes(pcb.timestamp_last_active.strftime('%Y/%m/%d,%H:%M:%S'), 'utf-8')
+                    )
+                    pcb_info_list += b'-'.join(line) + b'\r\n'
         except Exception as e:
             log.error('pcb manager: when get pcb info: %s' % e)
         self.lock.release()
 
-        return '%d\r\n%s\r\n$bye\r\n' % (len(pcb_str_list), '\r\n'.join(pcb_str_list))
+        return bytes('%d\r\n' % len(pcb_info_list), 'utf-8') + pcb_info_list + b'$bye\r\n'
