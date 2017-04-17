@@ -95,4 +95,4 @@ class SenderThread(threading.Thread):
             self.data_received = heartbeats[-1]     # 只有一个线程访问 self.data_received
             now = datetime.datetime.now()
             for heartbeat in heartbeats[:-1]:
-                self.got_heartbeat_cb(self.sender_id, heartbeat[1:], now)
+                self.got_heartbeat_cb(self.sender_id, heartbeat, now)
