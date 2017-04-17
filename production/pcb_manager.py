@@ -34,18 +34,32 @@ class PcbManager:
         log.debug('pcb manager: from sender %d: %s' % (sender_id, heartbeat))
         self.lock.acquire()
         try:
-            device_id, status = utils.split(heartbeat, '-')
-
-            # 更新 pcb 表
-            pcb = self.pcbs.get(device_id)
-            if pcb is None:
-                pcb = PcbClient(device_id, timestamp, status)
-                self.pcbs[device_id] = pcb
-            else:
-                pcb.update(timestamp, status)
+            self.parse_heartbeat(heartbeat, timestamp)
         except Exception as e:
             log.error('pcb manager: when parse from sender %d: %s' % (sender_id, e))
         self.lock.release()
+
+    def parse_heartbeat(self, heartbeat, timestamp):
+        """解析心跳包，更新列表
+
+        Args:
+            heartbeat (bytes): 心跳包
+            timestamp: 收到心跳包的时间
+        """
+        uuid, status = utils.split(heartbeat, b'-')
+
+        # uuid 一定是可见 ASCII 字符，长度为 12
+        uuid = uuid.strip()
+        if len(uuid) < 12:
+            return
+
+        # 更新 pcb 表
+        pcb = self.pcbs.get(uuid)
+        if pcb is None:
+            pcb = PcbClient(uuid, timestamp, status)
+            self.pcbs[uuid] = pcb
+        else:
+            pcb.update(timestamp, status)
 
     def get_active_pcbs_info(self):
         """读取当前客户列表"""

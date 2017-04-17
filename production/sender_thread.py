@@ -85,14 +85,14 @@ class SenderThread(threading.Thread):
 
     def parse_heartbeat_recv_buffer(self):
         """对收到的心跳包进行分包处理，并通知
+        分隔符为 \r\n，分割后不在此检查数据有效性
 
         心跳包格式为：
-        设备ID-解状态\r\n
+        设备UUID-解状态\r\n
         """
-        heartbeats = utils.split(self.data_received, '\r')
+        heartbeats = utils.split(self.data_received, b'\r\n')
         if len(heartbeats) > 1:
             self.data_received = heartbeats[-1]     # 只有一个线程访问 self.data_received
             now = datetime.datetime.now()
             for heartbeat in heartbeats[:-1]:
-                if heartbeat.startswith(b'\n'):
-                    self.got_heartbeat_cb(self.sender_id, heartbeat[1:], now)
+                self.got_heartbeat_cb(self.sender_id, heartbeat[1:], now)
